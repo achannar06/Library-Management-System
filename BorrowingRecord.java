@@ -1,6 +1,7 @@
 package Liberary;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class BorrowingRecord {
     private final int id;
@@ -8,6 +9,7 @@ public class BorrowingRecord {
     private final Book book;
     private final LocalDateTime BorrowingDate;
     private LocalDateTime returnDate;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private static int count = 1;
 
     private synchronized int generateId(){
@@ -40,8 +42,13 @@ public class BorrowingRecord {
 
     @Override
     public String toString() {
-        return "BorrowingRecord [id=" + id + ", member=" + member + ", book=" + book + ", BorrowingDate="
-                + BorrowingDate + ", returnDate=" + returnDate + "]";
+        String returned;
+        if(returnDate == null) 
+            returned = "Not returned Yet";
+        else 
+            returned = returnDate.format(formatter);
+            return "id=" + id + " :  member=" + member.getFull_name() + ", book=" + book.getTitle() + ", BorrowingDate="
+                + BorrowingDate.format(formatter) + ", returnDate=" + returned;
     }
 
 

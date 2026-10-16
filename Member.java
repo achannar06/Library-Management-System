@@ -6,6 +6,7 @@ public class Member {
     private String email;
     private String phone_number;
     private int BorrowsLeft = 3;
+    private boolean isDeleted;
     private static int count = 1;
     private static synchronized int generateId(){
         return count++;
@@ -16,6 +17,7 @@ public class Member {
         this.full_name = full_name;
         this.email = email;
         this.phone_number = phone_number;
+        isDeleted = false;
     }
 
     public int getId() {
@@ -39,6 +41,9 @@ public class Member {
     public void setPhone_number(String phone_number) {
         this.phone_number = phone_number;
     }
+    public boolean getIsDeleted(){
+        return isDeleted;
+    }
     
     public int getBorrowsLeft(){
         return BorrowsLeft;
@@ -51,9 +56,16 @@ public class Member {
         BorrowsLeft++;
     }
 
+    public void deleteMember(){
+        isDeleted = true;
+    }
+    public void restorMember(){
+        isDeleted = false;
+    }
+    
+
     @Override
     public String toString() {
-        return "Member [id=" + id + ", full_name=" + full_name + ", email=" + email + ", phone_number=" + phone_number
-                + "]";
+        return "id=" + id + " :  full_name=" + full_name + ", email=" + email + ", phone_number= " + phone_number;
     } 
 }

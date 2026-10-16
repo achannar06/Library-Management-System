@@ -6,5 +6,7 @@ public enum Category {
     FICTION,
     SCIENCE_FICTION,
     HISTORY,
-    BIOGRAPHY
+    BIOGRAPHY,
+    TECHNOLOGY,
+    SELF_HELP
 }

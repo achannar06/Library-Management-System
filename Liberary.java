@@ -20,11 +20,23 @@ public class Liberary {
         allBooks.add(book);
     }
     public void displayAllBooks(){
-        allBooks.forEach(System.out::println);
+        List<Book> res = allBooks.stream()
+                                 .filter(book -> !book.getIsDeleted()).toList();
+
+        if(res.isEmpty()) System.out.println("There are no books in this liberary!");
+        else res.forEach(System.out::println);
     }
     public Book getBookById(int id){
         Book res = allBooks.stream()
-                    .filter(book -> book.getId() == id)
+                    .filter(book -> book.getId() == id && !book.getIsDeleted())
+                    .findFirst()
+                    .orElse(null);
+
+        return res;
+    }
+    public Book getDeletedBookById(int id){
+        Book res = allBooks.stream()
+                    .filter(book -> book.getId() == id && book.getIsDeleted())
                     .findFirst()
                     .orElse(null);
 
@@ -32,7 +44,7 @@ public class Liberary {
     }
     public Book getBookByTitle(String title){
         Book res = allBooks.stream()
-                    .filter(book -> book.getTitle().equalsIgnoreCase(title))
+                    .filter(book -> book.getTitle().equalsIgnoreCase(title) && !book.getIsDeleted())
                     .findFirst()
                     .orElse(null);
         
@@ -40,18 +52,20 @@ public class Liberary {
     }
     public void displayAvailableBooks(){
         List<Book> res = allBooks.stream()
-                    .filter(book -> book.getAvailable() > 0)
+                    .filter(book -> book.getAvailable() > 0 && !book.getIsDeleted())
                     .toList();
 
-        res.forEach(System.out::println);
+        if(res.isEmpty()) System.out.println("There are no books avaiblable currently");
+        else res.forEach(System.out::println);
     }
     public List<Book> getBooksByCategory(Category cat){
         List<Book> res = allBooks.stream()
-                                .filter(book -> book.getCategory() == cat)
+                                .filter(book -> book.getCategory() == cat && !book.getIsDeleted())
                                 .toList();
         
         return res;
     }
+    
     ////////////////////////////////////// Members LOGIC ////////////////////////////////////
     public void addMember(String full_name, String email, String phone_number){
         Member member = new Member(full_name, email, phone_number);
@@ -59,18 +73,38 @@ public class Liberary {
     }
     public Member getMemberById(int id){
         Member res = AllMembers.stream()
-                           .filter(member -> member.getId() == id)
+                           .filter(member -> member.getId() == id && !member.getIsDeleted())
+                           .findFirst()
+                           .orElse(null);
+        
+        return res;
+    }
+    public Member getDeletedMemberById(int id){
+        Member res = AllMembers.stream()
+                           .filter(member -> member.getId() == id && member.getIsDeleted())
                            .findFirst()
                            .orElse(null);
         
         return res;
     }
     public void displayAllMembers(){
-        AllMembers.forEach(System.out::println);
+        List<Member> res = AllMembers.stream()
+                                 .filter(member -> !member.getIsDeleted()).toList();
+
+        if(res.isEmpty()) System.out.println("There are no members registered yet!");
+        else res.forEach(System.out::println);
     }
     public void displayBooksBorrowedByMember(Member m){
-        BooksBorrowed.get(m).forEach(System.out::println);
+        if(BooksBorrowed.containsKey(m)){
+            List<Book> bm = BooksBorrowed.get(m);
+            if(bm.size() == 0) System.out.println("This member hasn't borrowed any books yet");
+            else bm.forEach(System.out::println);
+        }    
+        else{
+            System.out.println("This member hasn't borrowed any books yet");
+        }
     }
+    
     ////////////////////////////////////// Liberary LOGIC ///////////////////////////////////
     public void Borrow(Member m , Book b) 
     throws BookLimitExceededException,BookUnavailableException,AlreadyBorrowedException{
@@ -91,14 +125,17 @@ public class Liberary {
         m.borrowBook();
         b.borrowBook();
         allRecords.add(new BorrowingRecord(m, b));
-        System.out.println(m.getFull_name() + " has successfully Borrowed " + b.getTitle());
+        System.out.println(m.getFull_name() + " has successfully Borrowed " + b.getTitle() + " , the available copies : " + b.getAvailable());
     }
-    public BorrowingRecord getRecord(Member m , Book b){
-        for(BorrowingRecord record : allRecords){
-            if(record.getBook() == b && record.getMember() == m) return record;
-        }
+    public List<BorrowingRecord> getRecord(Member m , Book b){
+        if(m == null || b == null) return null;
+        
+        List<BorrowingRecord> res = allRecords.stream()
+                                              .filter(record -> record.getBook() == b 
+                                              && record.getMember() == m).toList();
 
-        return null;
+
+        return res;
     }
     public void returnB(Member m , Book b)
     throws BookNotBorrowedException,MemberNotBorrowingException{
@@ -115,9 +152,63 @@ public class Liberary {
         BooksBorrowed.get(m).remove(b);
         b.returnBook();
         m.returnBook();
-        BorrowingRecord thisRecord = getRecord(m, b);
-        thisRecord.setReturnDate(LocalDateTime.now());
-        System.out.println(m.getFull_name() + " has successfully returned " + b.getTitle());
+        List<BorrowingRecord> thisRecord = getRecord(m, b);
+        BorrowingRecord activeRecord = thisRecord.stream()
+                                                 .filter(record -> record.getReturnDate() == null)
+                                                 .findFirst()
+                                                 .orElse(null);
+        activeRecord.setReturnDate(LocalDateTime.now());
+        System.out.println(m.getFull_name() + " has successfully returned " + b.getTitle()  + " , the available copies : " + b.getAvailable());
+    }
+    public void returnAll(Member m) throws MemberNotBorrowingException{
+        if(m == null) {
+            System.out.println("the member doesnt exist!");
+            return;
+        }
+
+        if(!BooksBorrowed.containsKey(m))
+            throw new MemberNotBorrowingException("This member doesn't have borrowing record!");
+
+        for(Book b : BooksBorrowed.get(m)){
+            b.returnBook();
+            m.returnBook();
+            List<BorrowingRecord> thisRecord = getRecord(m, b);
+            BorrowingRecord activeRecord = thisRecord.stream()
+                                                    .filter(record -> record.getReturnDate() == null)
+                                                    .findFirst()
+                                                    .orElse(null);
+            activeRecord.setReturnDate(LocalDateTime.now());
+            System.out.println(m.getFull_name() + " has successfully returned " + b.getTitle()  + " , the available copies : " + b.getAvailable());
+        }
+        BooksBorrowed.get(m).clear();
+    }  
+    public void getAllBorrowingRecords(){
+        if(allRecords.size() == 0) System.out.println("There are no Borrowing records yet!");
+        else allRecords.forEach(System.out::println); 
+    }
+    public void getActiveBorrowingRecords(){
+        List<BorrowingRecord> res = allRecords.stream()
+                                              .filter(record -> record.getReturnDate() == null)
+                                              .toList();
+
+        if(res.size() == 0) System.out.println("There are no active records yet!");
+        else res.forEach(System.out::println);    
+    }
+    public void getReturnedBorrowingRecords(){
+        List<BorrowingRecord> res = allRecords.stream()
+                                              .filter(record -> record.getReturnDate() != null).toList();
+
+        if(res.size() == 0) System.out.println("There are no returned records yet!");
+        else res.forEach(System.out::println);           
+    }
+    public List<BorrowingRecord> getAllRecordsForMember(Member m){
+        if(m == null) return null;
+        
+        List<BorrowingRecord> res = allRecords.stream()
+                                              .filter(record -> record.getMember() == m).toList();
+
+
+        return res;
     }
     ////////////////////////////////////// Statistics LOGIC /////////////////////////////////
     public int totalNumberOfBooks(){
@@ -146,9 +237,14 @@ public class Liberary {
         return res;
     }
     public void MembersBorrowedBooks(){
+        int nb = 0; // check if no member has borrowed books
         for(Member m : BooksBorrowed.keySet()){
-            if(BooksBorrowed.get(m).size() > 0) System.out.println(m);
+            if(BooksBorrowed.get(m).size() > 0){
+                System.out.println(m);
+                nb++;
+            } 
         }
+        if(nb == 0) System.out.println("No member has borrowed books");
     }
     public Member mostBorrowing(){
         int max = 0;
