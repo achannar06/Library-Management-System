@@ -142,39 +142,39 @@ public class Main{
                             int option = getChoiceFomUserInput(1, 5);
                         
                             switch(option){
-                            case 1 -> {
-                                System.out.print("Enter the Updated Title : ");
-                                String title = scanner.nextLine();
-                                book.setTitle(title);
-                                System.out.println("Title has been successfully updated!");
-                            }
-                            case 2 -> {
-                                System.out.print("Enter the Updated Author : ");
-                                String author = scanner.nextLine();
-                                book.setAuthor(author);
-                                System.out.println("Author has been successfully updated!");
-                            }
-                            case 3 -> {
-                                System.out.print("Enter the new publication year : ");
-                                String pub_year = scanner.nextLine();
-                                book.setPublication_year(pub_year);
-                                System.out.println("Publication year has been successfully updated!");
-                            }
-                            case 4 -> {
-                                book.setCategory(getCategoryFromUserInput());
-                                System.out.println("Category has been successfully updated!");
-                            }
-                            case 5 -> {
-                                int newQuantity = getValidIntegerFromUserInput("quantity");
-                                if(newQuantity >= book.getBorrowedCopies()){
-                                    book.setQuantity(newQuantity);
-                                    System.out.println("Quantity has been successfully updated!");
+                                case 1 -> {
+                                    System.out.print("Enter the Updated Title : ");
+                                    String title = scanner.nextLine();
+                                    book.setTitle(title);
+                                    System.out.println("Title has been successfully updated!");
                                 }
-                                else{
-                                    System.out.println("ERROR ! Your new Quantity is less than the number of borrowed copies!");
+                                case 2 -> {
+                                    System.out.print("Enter the Updated Author : ");
+                                    String author = scanner.nextLine();
+                                    book.setAuthor(author);
+                                    System.out.println("Author has been successfully updated!");
+                                }
+                                case 3 -> {
+                                    System.out.print("Enter the new publication year : ");
+                                    String pub_year = scanner.nextLine();
+                                    book.setPublication_year(pub_year);
+                                    System.out.println("Publication year has been successfully updated!");
+                                }
+                                case 4 -> {
+                                    book.setCategory(getCategoryFromUserInput());
+                                    System.out.println("Category has been successfully updated!");
+                                }
+                                case 5 -> {
+                                    int newQuantity = getValidIntegerFromUserInput("quantity");
+                                    if(newQuantity >= book.getBorrowedCopies()){
+                                        book.setQuantity(newQuantity);
+                                        System.out.println("Quantity has been successfully updated!");
+                                    }
+                                    else{
+                                        System.out.println("ERROR ! Your new Quantity is less than the number of borrowed copies!");
+                                    }
                                 }
                             }
-                        }
                         }
                         System.out.println("Continue or Exit this operation? choose 1 to continue , 0 to exit");
                         int option1 = getChoiceFomUserInput(0 , 1); 
@@ -296,25 +296,25 @@ public class Main{
 
                             int option = getChoiceFomUserInput(1, 3);
                             switch(option){
-                            case 1 -> {
-                                System.out.print("Enter the new full name: ");
-                                String full_name = scanner.nextLine();
-                                mb.setFull_name(full_name);
-                                System.out.println("The full name has been successfully updated");
+                                case 1 -> {
+                                    System.out.print("Enter the new full name: ");
+                                    String full_name = scanner.nextLine();
+                                    mb.setFull_name(full_name);
+                                    System.out.println("The full name has been successfully updated");
+                                }
+                                case 2 -> {
+                                    System.out.print("Enter the new email: ");
+                                    String email = scanner.nextLine();
+                                    mb.setEmail(email);
+                                    System.out.println("The email has been successfully updated");
+                                }
+                                case 3 -> {
+                                    System.out.print("Enter the new phone number: ");
+                                    String phone_number = scanner.nextLine();
+                                    mb.setPhone_number(phone_number);
+                                    System.out.println("The phone number has been successfully updated");
+                                }
                             }
-                            case 2 -> {
-                                System.out.print("Enter the new email: ");
-                                String email = scanner.nextLine();
-                                mb.setEmail(email);
-                                System.out.println("The email has been successfully updated");
-                            }
-                            case 3 -> {
-                                System.out.print("Enter the new phone number: ");
-                                String phone_number = scanner.nextLine();
-                                mb.setPhone_number(phone_number);
-                                System.out.println("The phone number has been successfully updated");
-                            }
-                        }
                         }
                         System.out.println("Continue or Exit this operation? choose 1 to continue , 0 to exit");
                         int option2 = getChoiceFomUserInput(0 , 1); 
